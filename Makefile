@@ -1,5 +1,5 @@
-exec:
-	./exec.sh -x
+ssh:
+	./ssh.sh -x
 
 test:
 	./test.sh

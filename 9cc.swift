@@ -62,6 +62,10 @@ func main() {
         tmp = ""
     }
 
+    if tmp.isEmpty && !opr.isEmpty {
+        error("予期しない文字列: \(opr)")
+    }
+
     if !opr.isEmpty && !tmp.isEmpty {
         let order = convertOrder(opr: opr, number: Int(tmp)!)
         print(order)

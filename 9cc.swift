@@ -16,7 +16,7 @@ func convertOrder(opr: String, number: Int) -> String {
 }
 
 func main() {
-    if (CommandLine.arguments.count != 2) {
+    if (CommandLine.arguments.count != 1) {
         error("引数の個数が正しくありません")
     }
 

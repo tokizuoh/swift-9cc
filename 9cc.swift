@@ -1,8 +1,5 @@
-import Glibc
-
 func error(_ message: String) {
-    debugPrint(message)
-    exit(1)
+    fatalError(message)
 }
 
 func convertOrder(opr: String, number: Int) -> String {
@@ -11,7 +8,7 @@ func convertOrder(opr: String, number: Int) -> String {
     } else if opr == "-" {
         return "  sub rax, \(number)"
     } else {
-        fatalError()
+        fatalError("予期せぬエラー")
     }
 }
 

@@ -2,14 +2,54 @@ func error(_ message: String) {
     fatalError(message)
 }
 
-func convertOrder(opr: String, number: Int) -> String {
-    if opr == "+" {
-        return "  add rax, \(number)"
-    } else if opr == "-" {
-        return "  sub rax, \(number)"
-    } else {
-        fatalError("予期せぬエラー")
+enum TokenKind {
+    enum Operator {
+        case plus
+        case minus
     }
+
+    case reserved(Operator)
+    case number(Int)
+}
+
+struct Token {
+    let kind: TokenKind
+}
+
+func tokenize(text: String) -> [Token] {
+    var tokens: [Token] = []
+
+    var tmp = ""
+    for t in text {
+        if t.isWhitespace {
+            continue
+        }
+
+        if t == "+" || t == "-" {
+            if !tmp.isEmpty {
+                tokens.append(Token(kind: .number(Int(tmp)!)))
+                tmp = ""
+            }
+
+            tokens.append(Token(kind: .reserved(t == "+" ? .plus : .minus)))
+            continue
+        }
+
+        if Int(String(t)) != nil {
+            tmp += String(t)
+            continue
+        }
+
+        error("トークナイズできません")
+    }
+
+    // TODO: 共通化
+    if !tmp.isEmpty {
+        tokens.append(Token(kind: .number(Int(tmp)!)))
+        tmp = ""
+    }
+
+    return tokens
 }
 
 func main() {
@@ -17,61 +57,52 @@ func main() {
         error("引数の個数が正しくありません")
     }
 
+    let tokens = tokenize(text: CommandLine.arguments[1])
+
     print(".intel_syntax noprefix")
     print(".globl main")
     print("main:")
 
-    var tmp = ""
-    var opr = ""
-    var isMoved = false
+    var isFirst = true
+    var tmpOperator: TokenKind.Operator? = nil
+    for token in tokens {
+        if isFirst {
+            guard case .number(let value) = token.kind else {
+                error("数ではありません")
+                return
+            }
 
-    let original = CommandLine.arguments[1]
-    for c in original {
-        let s: String = String(c)
-        if Int(s) != nil {
-            tmp += s
-        }
+            print("  mov rax, \(value)")
 
-        if s == "+" || s == "-" {
-            if isMoved {
-                if tmp.isEmpty {
-                    error("予期しない文字列が含まれています: \(original)")
+            isFirst = false
+        } else {
+            if let _tmpOperator = tmpOperator {
+                guard case .number(let value) = token.kind else {
+                    error("数ではありません")
+                    return
                 }
 
-                let order = convertOrder(opr: opr, number: Int(tmp)!)
-                print(order)
-
-                tmp = ""
-                opr = s
+                switch _tmpOperator {
+                    case .plus:
+                        print("  add rax, \(value)")
+                    case .minus:
+                        print("  sub rax, \(value)")
+                }
+                tmpOperator = nil
             } else {
-                if tmp.isEmpty {
-                    error("予期しない文字列が含まれています: \(original)")
-                } else {
-                    print("  mov rax, \(Int(tmp)!)")
-                    isMoved = true
-                    tmp = ""
-                    opr = s
+                guard case .reserved(let ope) = token.kind else {
+                    error("+か-の符号ではありません")
+                    return
                 }
+
+                tmpOperator = ope
             }
         }
-    }
 
-    if !isMoved && !tmp.isEmpty {
-        print("  mov rax, \(Int(tmp)!)")
-        isMoved = false
-        tmp = ""
-    }
-
-    if tmp.isEmpty && !opr.isEmpty {
-        error("予期しない文字列: \(opr)")
-    }
-
-    if !opr.isEmpty && !tmp.isEmpty {
-        let order = convertOrder(opr: opr, number: Int(tmp)!)
-        print(order)
     }
 
     print("  ret")
+    return
 }
 
 main()

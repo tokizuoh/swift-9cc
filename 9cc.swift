@@ -1,5 +1,14 @@
-func error(_ message: String) {
-    fatalError(message)
+import Foundation
+
+func error(_ message: String) -> Never {
+    print(message)
+    exit(1)
+}
+
+func errorAt(_ message: String, inputText: String, offset: Int) -> Never {
+    print(inputText)
+    print(String(repeating: " ", count: offset), "^ ", message, separator: "")
+    exit(1)
 }
 
 enum TokenKind {
@@ -14,39 +23,65 @@ enum TokenKind {
 
 struct Token {
     let kind: TokenKind
+    let position: Int
 }
 
 func tokenize(text: String) -> [Token] {
     var tokens: [Token] = []
 
     var tmp = ""
-    for t in text {
+    var tmpOffset = -1
+    for (offset, t) in text.enumerated() {
         if t.isWhitespace {
             continue
         }
 
         if t == "+" || t == "-" {
-            if !tmp.isEmpty {
-                tokens.append(Token(kind: .number(Int(tmp)!)))
+            if !tmp.isEmpty, tmpOffset != -1 {
+                tokens.append(
+                    Token(
+                        kind: .number(Int(tmp)!),
+                        position: tmpOffset
+                    )
+                )
                 tmp = ""
+                tmpOffset = -1
             }
 
-            tokens.append(Token(kind: .reserved(t == "+" ? .plus : .minus)))
+            tokens.append(
+                Token(
+                    kind: .reserved(t == "+" ? .plus : .minus),
+                    position: offset
+                )
+            )
             continue
         }
 
         if Int(String(t)) != nil {
+            if tmp.isEmpty {
+                tmpOffset = offset
+            }
             tmp += String(t)
             continue
         }
 
-        error("トークナイズできません")
+        errorAt(
+            "トークナイズできません",
+            inputText: text,
+            offset: offset
+        )
     }
 
     // TODO: 共通化
-    if !tmp.isEmpty {
-        tokens.append(Token(kind: .number(Int(tmp)!)))
+    if !tmp.isEmpty, tmpOffset != -1 {
+        tokens.append(
+            Token(
+                kind: .number(Int(tmp)!),
+                position: tmpOffset
+            )
+        )
         tmp = ""
+        tmpOffset = -1
     }
 
     return tokens
@@ -55,10 +90,11 @@ func tokenize(text: String) -> [Token] {
 func main() {
     guard CommandLine.arguments.count == 2 else {
         error("引数の個数が正しくありません")
-        return
     }
 
-    let tokens = tokenize(text: CommandLine.arguments[1])
+    let inputText = CommandLine.arguments[1]
+
+    let tokens = tokenize(text: inputText)
 
     print(".intel_syntax noprefix")
     print(".globl main")
@@ -69,8 +105,11 @@ func main() {
     for token in tokens {
         if isFirst {
             guard case .number(let value) = token.kind else {
-                error("数ではありません")
-                return
+                errorAt(
+                    "数ではありません",
+                    inputText: inputText,
+                    offset: token.position
+                )
             }
 
             print("  mov rax, \(value)")
@@ -79,8 +118,11 @@ func main() {
         } else {
             if let _tmpOperator = tmpOperator {
                 guard case .number(let value) = token.kind else {
-                    error("数ではありません")
-                    return
+                    errorAt(
+                        "数ではありません",
+                        inputText: inputText,
+                        offset: token.position
+                    )
                 }
 
                 switch _tmpOperator {
@@ -93,7 +135,6 @@ func main() {
             } else {
                 guard case .reserved(let ope) = token.kind else {
                     error("+か-の符号ではありません")
-                    return
                 }
 
                 tmpOperator = ope

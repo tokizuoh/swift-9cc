@@ -53,8 +53,9 @@ func tokenize(text: String) -> [Token] {
 }
 
 func main() {
-    if (CommandLine.arguments.count != 2) {
+    guard CommandLine.arguments.count == 2 else {
         error("引数の個数が正しくありません")
+        return
     }
 
     let tokens = tokenize(text: CommandLine.arguments[1])

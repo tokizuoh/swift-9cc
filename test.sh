@@ -4,7 +4,9 @@ assert() {
   expected="$1"
   input="$2"
 
-  swift 9cc.swift "$input" > tmp.s
+  cat *.swift > main.swift
+  swift main.swift "$input" > tmp.s
+  rm main.swift
   cc -o tmp tmp.s
   ./tmp
   actual="$?"

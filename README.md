@@ -5,3 +5,19 @@ C compiler written in Swift with reference to https://www.sigbus.info/compilerbo
 - Step2: [fba7a80](https://github.com/tokizuoh/swift-9cc/commit/fba7a80632faf94c0997b88ec3f5e54f5fa4231d)
 - Step3: [58e4ce9](https://github.com/tokizuoh/swift-9cc/commit/58e4ce9b607cac7d50b3ab727acda5bdd59a5483)
 - Step4: [65ab533](https://github.com/tokizuoh/swift-9cc/commit/65ab533929874bc4169f9299ff15c76aa84eb712)
+
+## Usage
+
+```sh
+$ make run ARG="1+23" -s
+Building for debugging...
+Build complete! (0.11s)
+----
+
+.intel_syntax noprefix
+.globl main
+main:
+  mov rax, 1
+  add rax, 23
+  ret
+```

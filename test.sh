@@ -1,10 +1,12 @@
 #!/bin/bash
 
+binpath=""
+
 assert() {
   expected="$1"
   input="$2"
 
-  swift run swift-9cc "$input" > tmp.s
+  "$binpath/swift-9cc" "$input" > tmp.s
   cc -o tmp tmp.s
   ./tmp
   actual="$?"
@@ -16,6 +18,8 @@ assert() {
     exit 1
   fi
 }
+
+binpath=`swift build --show-bin-path`
 
 # ステップ1: 整数1個をコンパイルする言語の作成
 assert 0 0

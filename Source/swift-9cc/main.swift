@@ -1,3 +1,16 @@
+import Foundation
+
+func error(_ message: String) -> Never {
+    print(message)
+    exit(1)
+}
+
+func errorAt(_ message: String, inputText: String, offset: Int) -> Never {
+    print(inputText)
+    print(String(repeating: " ", count: offset), "^ ", message, separator: "")
+    exit(1)
+}
+
 func main() {
     guard CommandLine.arguments.count == 2 else {
         error("引数の個数が正しくありません")

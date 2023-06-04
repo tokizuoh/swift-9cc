@@ -9,13 +9,11 @@ on:
 jobs:
   test:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v3
     - name: Print swift version
       run: swift --version
-    - name: DEBUG - bin-path
-      run: ls /home/runner/work/swift-9cc/swift-9cc/.build/x86_64-unknown-linux-gnu/debug
     - name: Run tests
       run: ./test.sh

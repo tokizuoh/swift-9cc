@@ -16,6 +16,6 @@ jobs:
     - name: Print swift version
       run: swift --version
     - run: swift build
-    - run: ls ./build
+    - run: ls -la ./build
     - name: Run tests
       run: ./test.sh

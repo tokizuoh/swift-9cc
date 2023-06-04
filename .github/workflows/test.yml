@@ -13,7 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Print swift version
-      run: swift --version
-    - name: Run tests
-      run: ./test.sh
+    - run: swift --version
+    - run: swift build
+    - run: ./test.sh

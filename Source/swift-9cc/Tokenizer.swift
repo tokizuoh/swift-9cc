@@ -1,10 +1,6 @@
 enum TokenKind {
-    enum Operator {
-        case plus
-        case minus
-    }
-
-    case reserved(Operator)
+    case plus
+    case minus
     case number(Int)
 }
 
@@ -38,7 +34,7 @@ enum Tokenizer {
 
                 tokens.append(
                     Token(
-                        kind: .reserved(t == "+" ? .plus : .minus),
+                        kind: t == "+" ? .plus : .minus,
                         position: offset
                     )
                 )

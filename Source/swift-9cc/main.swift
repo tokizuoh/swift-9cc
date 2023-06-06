@@ -25,7 +25,8 @@ func main() {
     print("main:")
 
     var isFirst = true
-    var tmpOperator: TokenKind.Operator? = nil
+    var tmpOperator: TokenKind? = nil
+    
     for token in tokens {
         if isFirst {
             guard case .number(let value) = token.kind else {
@@ -54,17 +55,27 @@ func main() {
                         print("  add rax, \(value)")
                     case .minus:
                         print("  sub rax, \(value)")
+                    default:
+                        errorAt(
+                            "予期せぬエラー",
+                            inputText: inputText,
+                            offset: token.position
+                        )
                 }
                 tmpOperator = nil
             } else {
-                guard case .reserved(let ope) = token.kind else {
-                    error("+か-の符号ではありません")
+                switch token.kind {
+                case .plus, .minus:
+                    tmpOperator = token.kind
+                case .number(_):
+                    errorAt(
+                        "+か-の符号ではありません",
+                        inputText: inputText,
+                        offset: token.position
+                    )
                 }
-
-                tmpOperator = ope
             }
         }
-
     }
 
     print("  ret")

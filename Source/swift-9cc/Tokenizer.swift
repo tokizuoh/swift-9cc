@@ -1,7 +1,51 @@
 enum TokenKind {
-    case plus
-    case minus
+    case add
+    case subtract
+    case multiply
+    case divide
+    case leftParenthesis
+    case rightParenthesis
     case number(Int)
+
+    var sign: String? {
+        switch self {
+        case .add:
+            return "+"
+        case .subtract:
+            return "-"
+        case .multiply:
+            return "*"
+        case .divide:
+            return "/"
+        case .leftParenthesis:
+            return "("
+        case .rightParenthesis:
+            return ")"
+        case .number(_):
+            return nil
+        }
+    }
+    
+    // TODO: Initializing from a Raw Value を使いたい
+    // https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/#Initializing-from-a-Raw-Value
+    static func get(from value: String) -> Self? {
+        switch value {
+        case "+":
+            return .add
+        case "-":
+            return .subtract
+        case "*":
+            return .multiply
+        case "/":
+            return .divide
+        case "(":
+            return .leftParenthesis
+        case ")":
+            return .rightParenthesis
+        default:
+            return nil
+        }
+    }
 }
 
 struct Token {
@@ -10,6 +54,8 @@ struct Token {
 }
 
 enum Tokenizer {
+    private static let punctuator = "+-*/()"
+    
     static func tokenize(text: String) -> [Token] {
         var tokens: [Token] = []
 
@@ -20,7 +66,7 @@ enum Tokenizer {
                 continue
             }
 
-            if t == "+" || t == "-" {
+            if Self.punctuator.contains(t) {
                 if !tmp.isEmpty, tmpOffset != -1 {
                     tokens.append(
                         Token(
@@ -34,7 +80,7 @@ enum Tokenizer {
 
                 tokens.append(
                     Token(
-                        kind: t == "+" ? .plus : .minus,
+                        kind: TokenKind.get(from: String(t))!,
                         position: offset
                     )
                 )
@@ -50,7 +96,7 @@ enum Tokenizer {
             }
 
             errorAt(
-                "トークナイズできません",
+                "invalid token",
                 inputText: text,
                 offset: offset
             )

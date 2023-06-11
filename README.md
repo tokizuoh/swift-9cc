@@ -10,10 +10,11 @@ C compiler written in Swift with reference to https://www.sigbus.info/compilerbo
 ## Usage
 
 ```sh
-$ swift run swift-9cc "(5*(7-1)+3)"
+$ make run ARG="(5*(7-1)+3)" -s
 Building for debugging...
-Build complete! (0.10s)
+Build complete! (0.12s)
 
+----
 .intel_syntax noprefix
 .globl main
 main:

@@ -19,6 +19,7 @@ assert() {
   fi
 }
 
+swift build
 binpath=`swift build --show-bin-path`
 
 # ステップ1: 整数1個をコンパイルする言語の作成

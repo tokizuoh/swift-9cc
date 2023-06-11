@@ -38,4 +38,10 @@ assert 47 '5+6*7'
 assert 15 '5*(9-6)'
 assert 4 '(3+5)/2'
 
+# ステップ6: 単項プラスと単項マイナス
+assert 10 '-10+20'
+assert 10 '- -10'
+assert 10 '- - +10'
+assert 17 '-(-10)+7'
+
 echo OK

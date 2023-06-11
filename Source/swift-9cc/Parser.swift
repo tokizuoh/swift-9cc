@@ -34,18 +34,29 @@ final class Parser {
         }
     }
     
-    // mul = primary ("*" primary | "/" primary)*
+    // mul = unary ("*" unary | "/" unary)*
     private func mul() -> Node {
-        var node = primary()
+        var node = unary()
         
         while true {
             if consume("*") {
-                node = .multiplication(node, primary())
+                node = .multiplication(node, unary())
             } else if consume("/") {
-                node = .division(node, primary())
+                node = .division(node, unary())
             } else {
                 return node
             }
+        }
+    }
+
+    // unary = ("+" | "-")? primary
+    private func unary() -> Node {
+        if consume("+") {
+            return unary()
+        } else if consume("-") {
+            return .subtractution(.number(0), unary())
+        } else {
+            return primary()
         }
     }
 

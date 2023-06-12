@@ -1,51 +1,15 @@
 enum TokenKind {
-    case add
-    case subtract
-    case multiply
-    case divide
-    case leftParenthesis
-    case rightParenthesis
-    case number(Int)
+    enum Reserved: String {
+        case add = "+"
+        case subtract = "-"
+        case multiply = "*"
+        case divide = "/"
+        case leftParenthesis = "("
+        case rightParenthesis = ")"
+    }
 
-    var sign: String? {
-        switch self {
-        case .add:
-            return "+"
-        case .subtract:
-            return "-"
-        case .multiply:
-            return "*"
-        case .divide:
-            return "/"
-        case .leftParenthesis:
-            return "("
-        case .rightParenthesis:
-            return ")"
-        case .number(_):
-            return nil
-        }
-    }
-    
-    // TODO: Initializing from a Raw Value を使いたい
-    // https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/#Initializing-from-a-Raw-Value
-    static func get(from value: String) -> Self? {
-        switch value {
-        case "+":
-            return .add
-        case "-":
-            return .subtract
-        case "*":
-            return .multiply
-        case "/":
-            return .divide
-        case "(":
-            return .leftParenthesis
-        case ")":
-            return .rightParenthesis
-        default:
-            return nil
-        }
-    }
+    case reserved(Reserved)
+    case number(Int)
 }
 
 struct Token {
@@ -80,7 +44,9 @@ enum Tokenizer {
 
                 tokens.append(
                     Token(
-                        kind: TokenKind.get(from: String(t))!,
+                        kind: TokenKind.reserved(
+                            TokenKind.Reserved(rawValue: String(t))!
+                        ),
                         position: offset
                     )
                 )

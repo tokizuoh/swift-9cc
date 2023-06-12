@@ -110,11 +110,16 @@ final class Parser {
             return false
         }
 
-        if op == token.kind.sign {
-            tokenList.advanceCursol()
-            return true
-        } else {
+        switch token.kind {
+        case .number(_):
             return false
+        case .reserved(let reserved):
+            if op == reserved.rawValue {
+                tokenList.advanceCursol()
+                return true
+            } else {
+                return false
+            }
         }
     }
 }

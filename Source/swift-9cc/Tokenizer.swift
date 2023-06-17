@@ -37,24 +37,19 @@ final class Tokenizer {
         var tmp = ""
         while cursol != text.endIndex {
             if let to = text.index(cursol, offsetBy: 2, limitedBy: text.endIndex) {
-                let token: Token? = {
-                    let op = String(text[cursol..<to])
-                    switch op {
-                    case "==", "!=", "<=", ">=":
-                        return Token(
-                            kind: .reserved(TokenKind.Reserved(rawValue: op)!),
+                let op = text[cursol..<to]
+                if let reserved = TokenKind.Reserved(rawValue: op.description) {
+                    appendNumberTokenIfNeeded(numberString: &tmp)
+
+                    tokens.append(
+                        Token(
+                            kind: TokenKind.reserved(reserved),
                             position: 0
                         )
-                    default:
-                        return nil
-                    }
-                }()
-                
-                if let token {
-                    appendNumberTokenIfNeeded(numberString: &tmp)
-                    
-                    tokens.append(token)
+                    )
+
                     cursol = to
+
                     continue
                 }
             }

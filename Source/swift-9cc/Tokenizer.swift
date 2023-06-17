@@ -6,6 +6,12 @@ enum TokenKind {
         case divide = "/"
         case leftParenthesis = "("
         case rightParenthesis = ")"
+        case equal = "=="
+        case notEqual = "!="
+        case lessThan = "<"
+        case lessThanOrEqual = "<="
+        case moreThan = ">"
+        case moreThanOrEqual = ">="
     }
 
     case reserved(Reserved)
@@ -17,70 +23,124 @@ struct Token {
     let position: Int
 }
 
-enum Tokenizer {
-    private static let punctuator = "+-*/()"
+final class Tokenizer {
+    private var tokens: [Token] = []
+    private lazy var cursol = text.startIndex
     
-    static func tokenize(text: String) -> [Token] {
-        var tokens: [Token] = []
-
+    private let text: String
+    
+    init(text: String) {
+        self.text = text.filter { !$0.isWhitespace }
+    }
+    
+    func tokenize() -> [Token] {
         var tmp = ""
-        var tmpOffset = -1
-        for (offset, t) in text.enumerated() {
-            if t.isWhitespace {
-                continue
+        while cursol != text.endIndex {
+            if let to = text.index(cursol, offsetBy: 2, limitedBy: text.endIndex) {
+                let _text = text[cursol..<to]
+                let token: Token?
+                switch _text {
+                case "==":
+                    token = Token(
+                        kind: .reserved(.equal),
+                        position: 0
+                    )
+                case "!=":
+                    token = Token(
+                        kind: .reserved(.notEqual),
+                        position: 0
+                    )
+                case "<=":
+                    token = Token(
+                        kind: .reserved(.lessThanOrEqual),
+                        position: 0
+                    )
+                case ">=":
+                    token = Token(
+                        kind: .reserved(.moreThanOrEqual),
+                        position: 0
+                    )
+                default:
+                    token = nil
+                }
+                
+                if let token {
+                    if !tmp.isEmpty {
+                        tokens.append(
+                            Token(
+                                kind: .number(Int(tmp)!),
+                                position: 0  // TODO
+                            )
+                        )
+                        tmp = ""
+                    }
+                    
+                    tokens.append(token)
+                    cursol = to
+                    continue
+                }
             }
 
-            if Self.punctuator.contains(t) {
-                if !tmp.isEmpty, tmpOffset != -1 {
+            guard let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) else {
+                break
+            }
+            var isMatched = false
+            "+-*/()<>".forEach { c in
+                let op = String(c)
+                if text[cursol..<to].hasPrefix(op) {
+                    if !tmp.isEmpty {
+                        tokens.append(
+                            Token(
+                                kind: .number(Int(tmp)!),
+                                position: 0 // TODO
+                            )
+                        )
+                        tmp = ""
+                    }
+                    
                     tokens.append(
                         Token(
-                            kind: .number(Int(tmp)!),
-                            position: tmpOffset
+                            kind: TokenKind.reserved(
+                                TokenKind.Reserved(rawValue: op)!
+                            ),
+                            position: 0 // TODO
                         )
                     )
-                    tmp = ""
-                    tmpOffset = -1
+                    cursol = text.index(after: cursol)
+                    isMatched = true
                 }
+            }
+            // aa
 
-                tokens.append(
-                    Token(
-                        kind: TokenKind.reserved(
-                            TokenKind.Reserved(rawValue: String(t))!
-                        ),
-                        position: offset
-                    )
-                )
+            let now = text[cursol..<to]
+            if Int(String(now)) != nil {
+                tmp += String(now)
+                cursol = text.index(after: cursol)
                 continue
             }
-
-            if Int(String(t)) != nil {
-                if tmp.isEmpty {
-                    tmpOffset = offset
-                }
-                tmp += String(t)
+            
+            if isMatched {
                 continue
             }
-
+            
             errorAt(
                 "invalid token",
+//                "invalid token \(text[cursol])",
                 inputText: text,
-                offset: offset
+                offset: 0  // TODO
             )
         }
-
-        // TODO: 共通化
-        if !tmp.isEmpty, tmpOffset != -1 {
+        
+        if !tmp.isEmpty {
             tokens.append(
                 Token(
                     kind: .number(Int(tmp)!),
-                    position: tmpOffset
+                    position: 0  // TODO
                 )
             )
             tmp = ""
-            tmpOffset = -1
         }
-
+        
         return tokens
     }
 }
-

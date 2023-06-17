@@ -21,7 +21,7 @@ func main() {
     }
 
     // Tokenize and parse.
-    let tokens = Tokenizer.tokenize(text: CommandLine.arguments[1])
+    let tokens = Tokenizer(text: CommandLine.arguments[1]).tokenize()
     let node = Parser(tokens: tokens).parse()
     
     // Generate assembly.

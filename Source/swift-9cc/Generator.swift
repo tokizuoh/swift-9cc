@@ -24,7 +24,11 @@ enum Generator {
         case .addition(let lhs, let rhs),
                 .subtractution(let lhs, let rhs),
                 .multiplication(let lhs, let rhs),
-                .division(let lhs, let rhs):
+                .division(let lhs, let rhs),
+                .equal(let lhs, let rhs),
+                .notEqual(let lhs, let rhs),
+                .lessThan(let lhs, let rhs),
+                .lessThanOrEqual(let lhs, let rhs):
             walk(from: lhs)
             walk(from: rhs)
         case .number(let value):
@@ -47,6 +51,22 @@ enum Generator {
             columns.append("  idiv rdi")
         case .number(_):
             error("unexpected error: will not reach here")
+        case .equal(_, _):
+            columns.append("  cmp rax, rdi")
+            columns.append("  sete al")
+            columns.append("  movzb rax, al")
+        case .notEqual(_, _):
+            columns.append("  cmp rax, rdi")
+            columns.append("  setne al")
+            columns.append("  movzb rax, al")
+        case .lessThan(_, _):
+            columns.append("  cmp rax, rdi")
+            columns.append("  setl al")
+            columns.append("  movzb rax, al")
+        case .lessThanOrEqual(_, _):
+            columns.append("  cmp rax, rdi")
+            columns.append("  setle al")
+            columns.append("  movzb rax, al")
         }
         
         columns.append("  push rax")

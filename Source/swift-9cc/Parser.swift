@@ -28,6 +28,10 @@ indirect enum Node {
     case subtractution(Node, Node)
     case multiplication(Node, Node)
     case division(Node, Node)
+    case equal(Node, Node)
+    case notEqual(Node, Node)
+    case lessThan(Node, Node)
+    case lessThanOrEqual(Node, Node)
 }
 
 // Parser that parse from token sequence to AST.
@@ -42,8 +46,47 @@ final class Parser {
         return expr()
     }
 
-    // expr = mul ("+" mul | "-" mul)*
+    // expr = equality
     private func expr() -> Node {
+        return equality()
+    }
+
+    // equality = relational | ("==" relational | "!=" relational)*
+    private func equality() -> Node {
+        var node = relational()
+        
+        while true {
+            if consume("==") {
+                node = .equal(node, relational())
+            } else if consume("!=") {
+                node = .notEqual(node, relational())
+            } else {
+                return node
+            }
+        }
+    }
+
+    // relational = add ("<" add | "<=" add | ">" add | ">=" add)*
+    private func relational() -> Node {
+        var node = add()
+
+        while true {
+            if consume("<") {
+                node = .lessThan(node, add())
+            } else if consume("<=") {
+                node = .lessThanOrEqual(node, add())
+            } else if consume(">") {
+                node = .lessThan(add(), node)
+            } else if consume(">=") {
+                node = .lessThanOrEqual(add(), node)
+            } else {
+                return node
+            }
+        }
+    }
+
+    // add = mul ("+" mul | "-" mul)*
+    private func add() -> Node {
         var node = mul()
         
         while true {

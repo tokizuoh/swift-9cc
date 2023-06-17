@@ -7,13 +7,14 @@ C compiler written in Swift with reference to https://www.sigbus.info/compilerbo
 - Step4: [65ab533](https://github.com/tokizuoh/swift-9cc/commit/65ab533929874bc4169f9299ff15c76aa84eb712)
 - Step5: [d4e96c8](https://github.com/tokizuoh/swift-9cc/commit/d4e96c8bb8cbfb6354f696b22b38ac04b8cb58c7)  
 - Step6: [bba7a45](https://github.com/tokizuoh/swift-9cc/commit/bba7a45bedcf897930000493f3161198c2db09f0)  
+- Step7: [ccb67da](https://github.com/tokizuoh/swift-9cc/commit/ccb67da51ce44b32803cf76e9350fd59826cba56)  
   
 ## Usage
 
 ```sh
-$ make run ARG="(5*(7-1)+3)" -s
+$make run ARG="(5*(7-1)+3)==66/2" -s
 Building for debugging...
-Build complete! (0.12s)
+Build complete! (0.11s)
 
 ----
 .intel_syntax noprefix
@@ -34,6 +35,19 @@ main:
   pop rdi
   pop rax
   add rax, rdi
+  push rax
+  push 66
+  push 2
+  pop rdi
+  pop rax
+  cqo
+  idiv rdi
+  push rax
+  pop rdi
+  pop rax
+  cmp rax, rdi
+  sete al
+  movzb rax, al
   push rax
   pop rax
   ret

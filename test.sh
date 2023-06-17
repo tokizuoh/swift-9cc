@@ -72,4 +72,8 @@ assert 1 '(6/2)==3'
 assert 1 '2*4==8'
 assert 0 '2*(4==8)'
 
+# README サンプルコード
+assert 1 '(5*(7-1)+3)==66/2'
+
+
 echo OK

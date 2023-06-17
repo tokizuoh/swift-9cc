@@ -56,39 +56,33 @@ final class Tokenizer {
             }
 
             // Single-letter punctuator
-            guard let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) else {
-                break
-            }
-            var isMatched = false
-            "+-*/()<>".forEach { c in
-                let op = String(c)
-                if text[cursol..<to] == op {
+            if let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) {
+                let op = text[cursol..<to]
+                if let reserved = TokenKind.Reserved(rawValue: op.description) {
                     appendNumberTokenIfNeeded(numberString: &tmp)
-                    
+
                     tokens.append(
                         Token(
-                            kind: TokenKind.reserved(
-                                TokenKind.Reserved(rawValue: op)!
-                            ),
-                            position: 0 // TODO
+                            kind: TokenKind.reserved(reserved),
+                            position: 0
                         )
                     )
-                    cursol = text.index(after: cursol)
-                    isMatched = true
+
+                    cursol = to
+
+                    continue
+                }
+            }
+            
+            if let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) {
+                let numberText = text[cursol..<to]
+                if Int(String(numberText)) != nil {
+                    tmp += String(numberText)
+                    cursol = to
+                    continue
                 }
             }
 
-            let now = text[cursol..<to]
-            if Int(String(now)) != nil {
-                tmp += String(now)
-                cursol = text.index(after: cursol)
-                continue
-            }
-            
-            if isMatched {
-                continue
-            }
-            
             errorAt(
                 "invalid token",
 //                "invalid token \(text[cursol])",

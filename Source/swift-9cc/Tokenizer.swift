@@ -39,18 +39,11 @@ final class Tokenizer {
             // Multi-letter punctuator
             if let to = text.index(cursol, offsetBy: 2, limitedBy: text.endIndex) {
                 let op = text[cursol..<to]
-                if let reserved = TokenKind.Reserved(rawValue: op.description) {
-                    appendNumberTokenIfNeeded(numberString: &tmp)
 
-                    tokens.append(
-                        Token(
-                            kind: TokenKind.reserved(reserved),
-                            position: 0
-                        )
-                    )
+                let success = appendReservedTokenIfNeeded(op: op.description, numberString: &tmp)
 
+                if success {
                     cursol = to
-
                     continue
                 }
             }
@@ -58,18 +51,11 @@ final class Tokenizer {
             // Single-letter punctuator
             if let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) {
                 let op = text[cursol..<to]
-                if let reserved = TokenKind.Reserved(rawValue: op.description) {
-                    appendNumberTokenIfNeeded(numberString: &tmp)
 
-                    tokens.append(
-                        Token(
-                            kind: TokenKind.reserved(reserved),
-                            position: 0
-                        )
-                    )
+                let success = appendReservedTokenIfNeeded(op: op.description, numberString: &tmp)
 
+                if success {
                     cursol = to
-
                     continue
                 }
             }
@@ -94,6 +80,23 @@ final class Tokenizer {
         appendNumberTokenIfNeeded(numberString: &tmp)
         
         return tokens
+    }
+    
+    private func appendReservedTokenIfNeeded(op: String, numberString: inout String) -> Bool {
+        if let reserved = TokenKind.Reserved(rawValue: op.description) {
+            appendNumberTokenIfNeeded(numberString: &numberString)
+
+            tokens.append(
+                Token(
+                    kind: TokenKind.reserved(reserved),
+                    position: 0
+                )
+            )
+
+            return true
+        }
+        
+        return false
     }
 
     private func appendNumberTokenIfNeeded(numberString: inout String) {

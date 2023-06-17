@@ -94,7 +94,6 @@ final class Tokenizer {
                     isMatched = true
                 }
             }
-            // aa
 
             let now = text[cursol..<to]
             if Int(String(now)) != nil {

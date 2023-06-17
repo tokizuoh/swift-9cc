@@ -1,4 +1,8 @@
-import Foundation
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 
 func error(_ message: String) -> Never {
     print(message)

@@ -1,24 +1,25 @@
-enum TokenKind {
-    enum Reserved: String {
-        case add = "+"
-        case subtract = "-"
-        case multiply = "*"
-        case divide = "/"
-        case leftParenthesis = "("
-        case rightParenthesis = ")"
-        case equal = "=="
-        case notEqual = "!="
-        case lessThan = "<"
-        case lessThanOrEqual = "<="
-        case moreThan = ">"
-        case moreThanOrEqual = ">="
+struct Token {
+    enum TokenKind {
+        enum Reserved: String {
+            case add = "+"
+            case subtract = "-"
+            case multiply = "*"
+            case divide = "/"
+            case leftParenthesis = "("
+            case rightParenthesis = ")"
+            case equal = "=="
+            case notEqual = "!="
+            case lessThan = "<"
+            case lessThanOrEqual = "<="
+            case moreThan = ">"
+            case moreThanOrEqual = ">="
+        }
+
+        case reserved(Reserved)
+        case number(Int)
     }
 
-    case reserved(Reserved)
-    case number(Int)
-}
-
-struct Token {
+    
     let kind: TokenKind
     let position: Int
 }
@@ -59,7 +60,7 @@ final class Tokenizer {
                     continue
                 }
             }
-            
+
             if let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) {
                 let numberText = text[cursol..<to]
                 if Int(String(numberText)) != nil {
@@ -78,17 +79,17 @@ final class Tokenizer {
         }
 
         appendNumberTokenIfNeeded(numberString: &tmp)
-        
+
         return tokens
     }
-    
+
     private func appendReservedTokenIfNeeded(op: String, numberString: inout String) -> Bool {
-        if let reserved = TokenKind.Reserved(rawValue: op.description) {
+        if let reserved = Token.TokenKind.Reserved(rawValue: op.description) {
             appendNumberTokenIfNeeded(numberString: &numberString)
 
             tokens.append(
                 Token(
-                    kind: TokenKind.reserved(reserved),
+                    kind: Token.TokenKind.reserved(reserved),
                     position: 0
                 )
             )

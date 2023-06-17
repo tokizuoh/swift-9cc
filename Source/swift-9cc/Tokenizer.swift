@@ -36,6 +36,7 @@ final class Tokenizer {
     func tokenize() -> [Token] {
         var tmp = ""
         while cursol != text.endIndex {
+            // Multi-letter punctuator
             if let to = text.index(cursol, offsetBy: 2, limitedBy: text.endIndex) {
                 let op = text[cursol..<to]
                 if let reserved = TokenKind.Reserved(rawValue: op.description) {
@@ -54,6 +55,7 @@ final class Tokenizer {
                 }
             }
 
+            // Single-letter punctuator
             guard let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) else {
                 break
             }

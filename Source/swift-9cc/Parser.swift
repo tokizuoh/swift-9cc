@@ -21,19 +21,6 @@ private final class TokenList {
     }
 }
 
-// AST node type
-indirect enum Node {
-    case number(Int)
-    case addition(Node, Node)
-    case subtractution(Node, Node)
-    case multiplication(Node, Node)
-    case division(Node, Node)
-    case equal(Node, Node)
-    case notEqual(Node, Node)
-    case lessThan(Node, Node)
-    case lessThanOrEqual(Node, Node)
-}
-
 // Parser that parse from token sequence to AST.
 final class Parser {
     private let tokenList: TokenList

@@ -65,7 +65,7 @@ final class Tokenizer {
             var isMatched = false
             "+-*/()<>".forEach { c in
                 let op = String(c)
-                if text[cursol..<to].hasPrefix(op) {
+                if text[cursol..<to] == op {
                     appendNumberTokenIfNeeded(numberString: &tmp)
                     
                     tokens.append(

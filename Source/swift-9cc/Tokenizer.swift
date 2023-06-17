@@ -58,7 +58,7 @@ final class Tokenizer {
     }
 
     private func appendReservedTokenIfNeeded(op: String, numberString: inout String) -> Bool {
-        if let reserved = Token.TokenKind.Reserved(rawValue: op.description) {
+        if let reserved = Token.TokenKind.Reserved(rawValue: op) {
             appendNumberTokenIfNeeded(numberString: &numberString)
 
             tokens.append(

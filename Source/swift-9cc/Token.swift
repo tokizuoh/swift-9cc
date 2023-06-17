@@ -19,7 +19,6 @@ struct Token {
         case number(Int)
     }
 
-    
     let kind: TokenKind
     let position: Int
 }

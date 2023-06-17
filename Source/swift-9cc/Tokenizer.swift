@@ -65,15 +65,7 @@ final class Tokenizer {
                 }
                 
                 if let token {
-                    if !tmp.isEmpty {
-                        tokens.append(
-                            Token(
-                                kind: .number(Int(tmp)!),
-                                position: 0  // TODO
-                            )
-                        )
-                        tmp = ""
-                    }
+                    appendNumberTokenIfNeeded(numberString: &tmp)
                     
                     tokens.append(token)
                     cursol = to
@@ -88,15 +80,7 @@ final class Tokenizer {
             "+-*/()<>".forEach { c in
                 let op = String(c)
                 if text[cursol..<to].hasPrefix(op) {
-                    if !tmp.isEmpty {
-                        tokens.append(
-                            Token(
-                                kind: .number(Int(tmp)!),
-                                position: 0 // TODO
-                            )
-                        )
-                        tmp = ""
-                    }
+                    appendNumberTokenIfNeeded(numberString: &tmp)
                     
                     tokens.append(
                         Token(
@@ -130,17 +114,21 @@ final class Tokenizer {
                 offset: 0  // TODO
             )
         }
+
+        appendNumberTokenIfNeeded(numberString: &tmp)
         
-        if !tmp.isEmpty {
+        return tokens
+    }
+
+    private func appendNumberTokenIfNeeded(numberString: inout String) {
+        if !numberString.isEmpty {
             tokens.append(
                 Token(
-                    kind: .number(Int(tmp)!),
+                    kind: .number(Int(numberString)!),
                     position: 0  // TODO
                 )
             )
-            tmp = ""
+            numberString = ""
         }
-        
-        return tokens
     }
 }

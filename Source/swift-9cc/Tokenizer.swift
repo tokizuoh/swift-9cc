@@ -11,30 +11,30 @@ final class Tokenizer {
     func tokenize() -> [Token] {
         var tmp = ""
         while cursol != text.endIndex {
-            // Multi-letter punctuator
-            if let to = text.index(cursol, offsetBy: 2, limitedBy: text.endIndex) {
-                let op = text[cursol..<to]
+            // Multi-letter punctuator -> Single-letter punctuator
+            var isMatched = false
+            for offset in [2, 1] {
+                if let to = text.index(cursol, offsetBy: offset, limitedBy: text.endIndex) {
+                    let op = text[cursol..<to]
 
-                let success = appendReservedTokenIfNeeded(op: op.description, numberString: &tmp)
+                    let success = appendReservedTokenIfNeeded(op: op.description, numberString: &tmp)
 
-                if success {
-                    cursol = to
-                    continue
+                    if success {
+                        cursol = to
+                        isMatched = true
+                    }
+                }
+
+                if isMatched {
+                    break
                 }
             }
 
-            // Single-letter punctuator
-            if let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) {
-                let op = text[cursol..<to]
-
-                let success = appendReservedTokenIfNeeded(op: op.description, numberString: &tmp)
-
-                if success {
-                    cursol = to
-                    continue
-                }
+            if isMatched {
+                continue
             }
 
+            // Single-number
             if let to = text.index(cursol, offsetBy: 1, limitedBy: text.endIndex) {
                 let numberText = text[cursol..<to]
                 if Int(String(numberText)) != nil {

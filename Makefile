@@ -13,3 +13,6 @@ run:
 	echo "----"
 	cat tmp.s
 	rm tmp.s
+
+sync:
+	./sync.sh

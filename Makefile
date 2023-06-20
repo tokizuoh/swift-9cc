@@ -16,3 +16,5 @@ run:
 
 sync:
 	./sync.sh
+
+.PHONY: ssh test clean run sync
